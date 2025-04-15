@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download BinMan App - Smart Waste Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    
+    <!-- Three.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- Fix for hero section with statistics moved right -->
+    <style>
+        /* Reset any conflicting hero styles */
+        .download-hero {
+            padding-top: 120px !important; /* Fixed minimum space below navbar */
+            padding-bottom: 60px !important;
+            background: var(--primary-dark);
+            position: relative;
+            overflow: visible;
+        }
+        
+        /* Force navbar above everything */
+        #navbar {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        
+        /* Container layout with increased gap */
+        .hero-container {
+            display: flex;
+            flex-direction: row !important;
+            gap: 100px !important; /* Further increased gap between image and content */
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            align-items: center;
+        }
+        
+        /* Left image column */
+        .hero-image-column {
+            flex: 0.7; /* Make image column even smaller */
+            order: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding-left: 0;
+            position: relative;
+            overflow: visible;
+            max-width: 40%; /* Limit max width */
+        }
+        
+        /* Right content column with additional padding */
+        .hero-content {
+            flex: 1.3; /* Make content column even larger */
+            order: 2;
+            padding: 20px 20px 20px 50px; /* Increased left padding */
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin-left: 30px; /* Increased left margin */
+        }
+        
+        /* Image styling */
+        .hero-person-image {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            object-position: left center;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.25));
+        }
+        
+        /* Image container */
+        .image-container {
+            width: 100%;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+        
+        /* Title and text styling with better right spacing */
+        .title-with-logo h1 {
+            font-size: 2.6rem;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            color: #fff;
+            padding-right: 20px; /* Add right padding */
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.9);
+            padding-right: 20px; /* Add right padding */
+        }
+        
+        /* Stats layout - moved right */
+        .download-stats {
+            display: flex;
+            gap: 40px; /* Increased gap between stats */
+            margin-bottom: 30px;
+            margin-left: 15px; /* Added left margin to shift stats right */
+            padding-left: 10px; /* Added left padding */
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            min-width: 80px; /* Ensure minimum width */
+        }
+        
+        .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Download buttons */
+        .app-store-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+            margin-left: 15px; /* Align with stats */
+        }
+        
+        .store-button {
+            max-width: 160px;
+            transition: transform 0.3s;
+        }
+        
+        .store-button:hover {
+            transform: translateY(-5px);
+        }
+        
+        .store-button img {
+            width: 100%;
+            height: auto;
+        }
+        
+        /* Gradient text effect */
+        .gradient-text {
+            background: linear-gradient(45deg, #00cc66, #00aa99);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+            font-weight: 700;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 1200px) {
+            .hero-container {
+                gap: 70px !important;
+            }
+            
+            .hero-content {
+                padding: 20px 20px 20px 30px;
+                margin-left: 20px;
+            }
+            
+            .download-stats {
+                margin-left: 10px;
+                padding-left: 5px;
+            }
+            
+            .app-store-buttons {
+                margin-left: 10px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .download-hero {
+                padding-top: 100px !important;
+            }
+            
+            .hero-container {
+                flex-direction: column !important;
+                padding: 20px;
+                gap: 30px !important;
+            }
+            
+            .hero-image-column {
+                margin-bottom: 20px;
+                justify-content: center;
+                max-width: none;
+            }
+            
+            .hero-person-image {
+                max-width: 85%;
+            }
+            
+            .hero-content {
+                padding: 0;
+                margin-left: 0;
+            }
+            
+            .title-with-logo h1 {
+                font-size: 2.2rem;
+                text-align: center;
+                padding-right: 0;
+            }
+            
+            .hero-description {
+                text-align: center;
+                padding-right: 0;
+            }
+            
+            .download-stats {
+                justify-content: center;
+                margin-left: 0;
+                padding-left: 0;
+            }
+            
+            .app-store-buttons {
+                justify-content: center;
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .download-hero {
+                padding-top: 80px !important;
+            }
+            
+            .title-with-logo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .download-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .app-store-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav id="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="Binman_logo-removebg-preview.png" alt="BinMan Logo" class="nav-logo">
+                <a href="index.html">BinMan</a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="download.html" class="active">Download</a>
+                <a href="partners.html">Partners</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="login-btn" id="loginBtn">Login</button>
+                <button class="signup-btn" id="signupBtn">Sign Up</button>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <span class="user-name" id="userName"></span>
+                    <div class="user-dropdown">
+                        <i class="fas fa-chevron-down"></i>
+                        <div class="dropdown-content">
+                            <div class="dropdown-item">
+                                <i class="fas fa-user"></i> My Profile
+                            </div>
+                            <div class="dropdown-item">
+                                <i class="fas fa-cog"></i> Settings
+                            </div>
+                            <div class="dropdown-item">
+                                <i class="fas fa-chart-line"></i> My Impact
+                            </div>
+                            <div class="dropdown-item logout-btn" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login/Signup Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h2 id="modalTitle">Welcome Back</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="signup">Sign Up</div>
+            </div>
+            
+            <div class="auth-content">
+                <!-- Login Form -->
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail"></label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword"></label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" id="loginPasswordToggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="auth-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="rememberLogin">
+                            <label for="rememberLogin">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <div class="auth-error" id="loginError"></div>
+                    <div class="auth-success" id="loginSuccess"></div>
+                    
+                    <button type="submit" class="auth-submit">Login</button>
+                    
+                    <div class="social-login">
+                        <div class="social-login-title">
+                            <span>Or continue with</span>
+                        </div>
+                        <div class="social-buttons">
+                            <button type="button" class="social-button google" data-provider="google">
+                                <i class="fab fa-google"></i> Google
+                            </button>
+                            <button type="button" class="social-button facebook" data-provider="facebook">
+                                <i class="fab fa-facebook-f"></i> Facebook
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-footer">
+                        <p>Don't have an account? <span class="tab-switch" data-tab="signup">Sign Up</span></p>
+                    </div>
+                </form>
+                
+                <!-- Signup Form -->
+                <form class="auth-form" id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName"></label>
+                        <input type="text" id="signupName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail"></label>
+                        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword"></label>
+                        <input type="password" id="signupPassword" placeholder="Choose a password" required>
+                        <button type="button" class="password-toggle" id="signupPasswordToggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="auth-error" id="signupError"></div>
+                    <div class="auth-success" id="signupSuccess"></div>
+                    
+                    <button type="submit" class="auth-submit">Create Account</button>
+                    
+                    <div class="social-login">
+                        <div class="social-login-title">
+                            <span>Or sign up with</span>
+                        </div>
+                        <div class="social-buttons">
+                            <button type="button" class="social-button google" data-provider="google">
+                                <i class="fab fa-google"></i> Google
+                            </button>
+                            <button type="button" class="social-button facebook" data-provider="facebook">
+                                <i class="fab fa-facebook-f"></i> Facebook
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-footer">
+                        <p>Already have an account? <span class="tab-switch" data-tab="login">Login</span></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section with proper spacing and layout -->
+        <section class="download-hero">
+            <div class="hero-container">
+                <!-- Left: Image Column -->
+                <div class="hero-image-column">
+                    <div class="image-container">
+                        <img src="BANGER.png" alt="Person using BinMan app" class="hero-person-image">
+                    </div>
+                </div>
+                
+                <!-- Right: Content Column (shifted right) -->
+                <div class="hero-content">
+                    <!-- Title with right padding -->
+                    <div class="title-with-logo">
+                        <h1>Transform Waste Management<br>with <span class="gradient-text">BinMan</span></h1>
+                    </div>
+                    
+                    <!-- Description with right padding -->
+                    <p class="hero-description">Join thousands of eco-warriors making our planet greener, one bin at a time. Download now and start earning cash rewards while saving the environment!</p>
+                    
+                    <!-- Statistics -->
+                    <div class="download-stats">
+                        <div class="stat">
+                            <span class="number">500+</span>
+                            <span class="label">Active Users</span>
+                        </div>
+                        <div class="stat">
+                            <span class="number">4.8</span>
+                            <span class="label">App Rating</span>
+                        </div>
+                        <div class="stat">
+                            <span class="number">100T</span>
+                            <span class="label">Waste Recycled</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Download Buttons -->
+                    <div class="app-store-buttons">
+                        <a href="#" class="store-button google-play">
+                            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play">
+                        </a>
+                        <a href="#" class="store-button app-store">
+                            <img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="Download on the App Store">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <!-- Additional decorative elements -->
+            <div class="decorative-accent accent-4"></div>
+            <div class="floating-icon floating-icon-5"><i class="fas fa-recycle"></i></div>
+            
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">Revolutionary Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>AI-Powered Recognition</h3>
+                        <p>Instant waste identification and pricing through advanced machine learning</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="feature-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h3>Smart Marketplace</h3>
+                        <p>Buy and sell recycled materials in our sustainable ecosystem</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3>Partner Network</h3>
+                        <p>Connect with verified recycling partners and waste collectors</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="feature-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h3>Reward System</h3>
+                        <p>Earn points and exclusive rewards for your eco-friendly actions</p>
+                        <a href="#" class="learn-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works">
+            <!-- Additional decorative elements -->
+            <div class="decorative-accent accent-5"></div>
+            <div class="floating-icon floating-icon-6"><i class="fas fa-leaf"></i></div>
+            
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">How BinMan Works</h2>
+                <div class="timeline" data-aos="fade-up">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>1. Sign Up</h3>
+                            <p>Create your account in seconds</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>2. Snap & Upload</h3>
+                            <p>Take a photo of your waste items</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>3. AI Analysis</h3>
+                            <p>Get instant categorization and pricing</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>4. Choose Action</h3>
+                            <p>Sell, donate, or recycle</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>5. Earn Rewards</h3>
+                            <p>Get points and exclusive benefits</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- App Interface Showcase -->
+        <section class="interface-showcase">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">App Interface Showcase</h2>
+                <p class="section-subtitle" data-aos="fade-up">Explore our intuitive design and powerful features</p>
+                
+                <div class="image-carousel-container" data-aos="fade-up">
+                    <div class="image-carousel">
+                        <div class="image-slide active">
+                            <img src="login.JPG" alt="BinMan App Login Screen">
+                            <div class="slide-caption">
+                                <h3>Easy Sign-Up & Login</h3>
+                                <p>Get started quickly with our simple login process</p>
+                            </div>
+                        </div>
+                        <div class="image-slide">
+                            <img src="upload .jpg" alt="BinMan Waste Upload">
+                            <div class="slide-caption">
+                                <h3>Simple Waste Upload</h3>
+                                <p>Snap a photo and let our AI do the work</p>
+                            </div>
+                        </div>
+                        <div class="image-slide">
+                            <img src="categories .jpg" alt="BinMan Categories">
+                            <div class="slide-caption">
+                                <h3>Waste Categories</h3>
+                                <p>Organize and track different types of materials</p>
+                            </div>
+                        </div>
+                        <div class="image-slide">
+                            <img src="marketplace.jpg" alt="BinMan Marketplace">
+                            <div class="slide-caption">
+                                <h3>Sustainable Marketplace</h3>
+                                <p>Buy and sell recycled materials in our eco-community</p>
+                            </div>
+                        </div>
+                        <div class="image-slide">
+                            <img src="collaboration 1.1.jpg" alt="BinMan Collaboration Dashboard">
+                            <div class="slide-caption">
+                                <h3>Collaboration Dashboard</h3>
+                                <p>Connect with recycling companies and track partnerships</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-nav-btn prev-btn" aria-label="Previous image">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-nav-btn next-btn" aria-label="Next image">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    
+                    <div class="carousel-indicators">
+                        <span class="indicator active" data-index="0"></span>
+                        <span class="indicator" data-index="1"></span>
+                        <span class="indicator" data-index="2"></span>
+                        <span class="indicator" data-index="3"></span>
+                        <span class="indicator" data-index="4"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download CTA -->
+        <section class="download-cta">
+            <!-- Additional decorative elements -->
+            <div class="decorative-accent accent-6"></div>
+            <div class="floating-icon floating-icon-7"><i class="fas fa-seedling"></i></div>
+            
+            <div class="container">
+                <div class="cta-content" data-aos="fade-up">
+                    <h2>Ready to Make a Difference?</h2>
+                    <p>Join thousands of users already making our planet greener</p>
+                    <div class="app-store-buttons">
+                        <a href="#" class="store-button google-play">
+                            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play">
+                        </a>
+                        <a href="#" class="store-button app-store">
+                            <img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="Download on the App Store">
+                        </a>
+                    </div>
+                    <div class="testimonial-carousel">
+                        <div class="testimonial">
+                            <div class="rating">★★★★★</div>
+                            <p>"BinMan has completely changed how I think about waste management!"</p>
+                            <cite>- Sarah M.</cite>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <h3>BinMan</h3>
+                    <p>Revolutionizing waste management through AI technology and community engagement.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="download.html">Download</a></li>
+                        <li><a href="partners.html">Partners</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-newsletter">
+                    <h4>Stay Updated</h4>
+                    <p>Subscribe to our newsletter for the latest updates.</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 BinMan. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Bubble -->
+    <div class="chat-bubble">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            offset: 100,
+            once: true
+        });
+    </script>
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+    
+    <!-- Carousel Script for App Interface Showcase -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get carousel elements
+            const slides = document.querySelectorAll('.image-carousel .image-slide');
+            const indicators = document.querySelectorAll('.carousel-indicators .indicator');
+            const prevBtn = document.querySelector('.carousel-nav-btn.prev-btn');
+            const nextBtn = document.querySelector('.carousel-nav-btn.next-btn');
+            
+            if (!slides.length || !indicators.length) return; // Exit if elements don't exist
+            
+            let currentSlideIndex = 0;
+            let slideInterval;
+            
+            // Function to display a specific slide
+            function showSlide(index) {
+                // Hide current slide
+                slides[currentSlideIndex].classList.remove('active');
+                indicators[currentSlideIndex].classList.remove('active');
+                
+                // Update current index
+                currentSlideIndex = index;
+                
+                // Handle index bounds
+                if (currentSlideIndex >= slides.length) {
+                    currentSlideIndex = 0;
+                } else if (currentSlideIndex < 0) {
+                    currentSlideIndex = slides.length - 1;
+                }
+                
+                // Show new current slide
+                slides[currentSlideIndex].classList.add('active');
+                indicators[currentSlideIndex].classList.add('active');
+            }
+            
+            // Next slide function
+            function nextSlide() {
+                showSlide(currentSlideIndex + 1);
+            }
+            
+            // Previous slide function
+            function prevSlide() {
+                showSlide(currentSlideIndex - 1);
+            }
+            
+            // Start automatic slideshow
+            function startSlideshow() {
+                if (slideInterval) {
+                    clearInterval(slideInterval);
+                }
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+            
+            // Stop slideshow
+            function stopSlideshow() {
+                if (slideInterval) {
+                    clearInterval(slideInterval);
+                }
+            }
+            
+            // Event listeners for navigation buttons
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    stopSlideshow();
+                    nextSlide();
+                    startSlideshow();
+                });
+            }
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    stopSlideshow();
+                    prevSlide();
+                    startSlideshow();
+                });
+            }
+            
+            // Event listeners for indicators
+            indicators.forEach(function(indicator, index) {
+                indicator.addEventListener('click', function() {
+                    stopSlideshow();
+                    showSlide(index);
+                    startSlideshow();
+                });
+            });
+            
+            // Add touch swipe support for mobile
+            const carousel = document.querySelector('.image-carousel');
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            if (carousel) {
+                carousel.addEventListener('touchstart', function(e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+                
+                carousel.addEventListener('touchend', function(e) {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                }, { passive: true });
+                
+                function handleSwipe() {
+                    if (touchEndX < touchStartX - 50) {
+                        // Swipe left - next slide
+                        stopSlideshow();
+                        nextSlide();
+                        startSlideshow();
+                    } else if (touchEndX > touchStartX + 50) {
+                        // Swipe right - previous slide
+                        stopSlideshow();
+                        prevSlide();
+                        startSlideshow();
+                    }
+                }
+            }
+            
+            // Start slideshow on page load
+            startSlideshow();
+            
+            console.log('App Interface Showcase carousel initialized');
+        });
+    </script>
+</body>
+</html> 
