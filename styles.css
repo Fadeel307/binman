@@ -568,7 +568,7 @@ canvas#impactChart {
 .impact-highlights {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-evenly;
     gap: 30px;
     margin-top: 10px;
 }
